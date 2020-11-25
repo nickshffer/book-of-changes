@@ -71,3 +71,33 @@ SELECT * FROM reading
 DROP TABLE Reading
 
 DELETE FROM reading WHERE _id=${id}
+
+## General notes
+- Webpack sucks. From what I can tell it does a lot of cool stuff but the learning curve is high. Webpack is unnecessary on Docker tho so I largely ignore it. That being said -- and I'm probably just missing something -- it doesn't seem like the scripts in package.json really work without it ('npm run start' fails). 
+- Again, probably missing something, but the project doesn't seem to conform what ppl were espousing as best practices (ex. putting everything under src and breaking directories into components based on functionality).
+- I originally tried to deploy the client and server as separate services but hit some trouble (ex. hexgramController.js references ../../client/information/hexagrams.json). Probably overkill for this project but it may be worth moving all that over to the server and keeping them completely separate.
+- I added the table creation to the initialization of the pg database (initdb.sql). If you want to make changes to that table/commands, make sure you delete the pgdata directory that will get created when you build the services for the first time (it doesn't run init scripts if the directory/volume already exists).
+- Minor nit: the sql command in your readme doesn't reflect the inserts the server makes. Check out initdb.sql to see what I changed it to. Not sure if those are the correct datatypes but it works.
+- Only real code change I made was changing the connection setting for pg in on the server. Just a heads up, that connection string you had before seemed to include the un/pw and is now in the Git history of this project. Obv this is a throwaway but just something to be mindful of.
+- Make sure you add pgdata to your .gitignore
+- Check out .env.example for what you'll need to add to .env
+
+## Deployment notes
+- Download and install docker from https://docs.docker.com/docker-for-mac/install/
+- Make sure the Docker service is started up and you're in the project root
+
+The following will build the two services and attach to the them so you can watch the logs:
+```
+docker-compose up --build
+```
+
+On later executions you can drop the --build and/or add -d to run the services in detached mode (in the background)
+```
+docker-compose up -d
+```
+
+If you're attached, use ctrl+c to stop the services. Otherwise, use 
+```
+docker-compose down
+```
+
